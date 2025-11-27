@@ -1,5 +1,6 @@
 // Tailwind-based Job Tracker PWA (Option C: bundled defaultJobs + default_jobs.json file)
 const STORAGE_KEY = "job-tracker.jobs.v1";
+const PROFILE_LS_KEY = "job-tracker.profile.v1";
 
 function uid() {
   return "id-" + Math.random().toString(36).slice(2, 9);
@@ -170,6 +171,9 @@ function extractUrl(text) {
   const m = (text || "").match(/https?:\/\/[^\s]+/i);
   return m ? m[0] : "";
 }
+function stripUrls(text) {
+  return (text || "").replace(/https?:\/\/[^\s]+/gi, "").trim();
+}
 
 // Optional user profile (name/phone/email) from localStorage
 function getUserProfile() {
@@ -195,7 +199,7 @@ function getUserProfile() {
 function buildEmailTemplate(job) {
   const profile = getUserProfile();
   const school = job.companyName || "Your School";
-  const subject = "Application for Teacher Position";
+  const subject = "Application for a Teaching Position";
   const name =
     profile && profile.name && profile.name !== "Your Name"
       ? profile.name
@@ -204,10 +208,6 @@ function buildEmailTemplate(job) {
     profile && profile.phone && profile.phone !== "Your Phone"
       ? profile.phone
       : "+91-XXXXXXXXXX";
-  const emailLine =
-    profile && profile.email && profile.email !== "your@email.com"
-      ? `Email: ${profile.email}`
-      : "";
   const lines = [
     "Dear Hiring Committee,",
     "",
@@ -223,7 +223,6 @@ function buildEmailTemplate(job) {
     name,
     `Phone: ${phone}`,
   ];
-  if (emailLine) lines.push(emailLine);
   const body = lines.join("\n");
   return { subject, body };
 }
@@ -293,7 +292,7 @@ function render() {
     node.querySelector(".company").textContent = job.companyName || "—";
     node.querySelector(".jobTitle").textContent = job.jobTitle || "";
     node.querySelector(".location").textContent = job.location || "";
-    node.querySelector(".notes").textContent = job.notes || "";
+    node.querySelector(".notes").textContent = stripUrls(job.notes) || "";
     node.querySelector("time.timestamp").textContent = job.createdAt
       ? new Date(job.createdAt).toLocaleString()
       : "";
@@ -485,6 +484,8 @@ if (profileForm) {
       };
       localStorage.setItem(PROFILE_LS_KEY, JSON.stringify(val));
       closeProfile();
+      // Update card email links with latest profile immediately
+      render();
     } catch (_e) {
       closeProfile();
     }
