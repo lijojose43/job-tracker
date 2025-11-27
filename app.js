@@ -425,6 +425,9 @@ if('serviceWorker' in navigator){ navigator.serviceWorker.register('service-work
         : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v2m0 14v2m9-9h-2M5 12H3m14.95 6.95l-1.414-1.414M7.464 7.464L6.05 6.05m12.9 0l-1.414 1.414M7.464 16.536L6.05 17.95M12 8a4 4 0 100 8 4 4 0 000-8z"/>';
     }
     if(btn){ btn.title = light ? 'Switch to dark theme' : 'Switch to light theme'; btn.setAttribute('aria-label', btn.title); }
+    // Ensure status bar (time section) color matches app theme color
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    if(themeMeta){ themeMeta.setAttribute('content', '#06b6d4'); }
     localStorage.setItem(THEME_KEY, theme);
   }
   const saved = localStorage.getItem(THEME_KEY) || 'dark';
