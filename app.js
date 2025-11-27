@@ -670,7 +670,7 @@ if ("serviceWorker" in navigator) {
     // Ensure status bar (time section) color matches app theme color
     const themeMeta = document.querySelector('meta[name="theme-color"]');
     if (themeMeta) {
-      themeMeta.setAttribute("content", "#06b6d4");
+      themeMeta.setAttribute("content", light ? "#f8fafc" : "#0f172a");
     }
     localStorage.setItem(THEME_KEY, theme);
   }
