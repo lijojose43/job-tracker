@@ -9,99 +9,7 @@ function nowTs() {
   return new Date().toISOString();
 }
 
-const bundledDefaultJobs = [
-  {
-    companyName: "The Choice School (Tripunithura)",
-    jobTitle: "School Contact",
-    location: "Nadama East, Tripunithura",
-    contactEmail: "adminschool@choicegroup.in",
-    contactPhone: "",
-    notes: "https://choiceschool.com/contact-us/",
-    status: "Pending",
-  },
-  {
-    companyName: "Bhavan's Munshi Vidyashram (Thiruvamkulam)",
-    jobTitle: "School Contact",
-    location: "Thiruvamkulam, Tripunithura",
-    contactEmail: "bhavansthiruvamkulam@yahoo.co.in",
-    contactPhone: "",
-    notes: "https://www.bmvthiruvamkulam.ac.in/contact-us",
-    status: "Pending",
-  },
-  {
-    companyName: "Chinmaya Vidyalaya (Tripunithura)",
-    jobTitle: "School Contact",
-    location: "Kannankulangara, Tripunithura",
-    contactEmail: "chinmayavidyalayatripunithura@gmail.com",
-    contactPhone: "",
-    notes: "https://chinmayavidyalaya.edu.in/page?content=students",
-    status: "Pending",
-  },
-  {
-    companyName: "Sanskara School (Infopark/Phase II)",
-    jobTitle: "School Contact",
-    location: "Infopark/Phase II, Kochi",
-    contactEmail: "info@sanskaraschool.com",
-    contactPhone: "",
-    notes: "https://sanskaraschool.com/contact-us",
-    status: "Pending",
-  },
-  {
-    companyName: "Assisi Vidyaniketan Public School (Kakkanad)",
-    jobTitle: "School Contact",
-    location: "Chembumukku, Thrikkakara (Kakkanad)",
-    contactEmail: "assisipublic@assisi.ac.in",
-    contactPhone: "",
-    notes: "https://assisi.ac.in/",
-    status: "Pending",
-  },
-  {
-    companyName: "Rajagiri Seashore CMI School",
-    jobTitle: "School Contact",
-    location: "South Malippuram / near Tripunithura region",
-    contactEmail: "rajagiriseashore@gmail.com",
-    contactPhone: "",
-    notes: "https://rajagiriseashore.com/contact-us/",
-    status: "Pending",
-  },
-  {
-    companyName: "MGM Public School (Ernakulam)",
-    jobTitle: "School Contact",
-    location: "Ernakulam",
-    contactEmail: "mgmps@mgmedugroup.com",
-    contactPhone: "",
-    notes: "https://mgmschool.com/ernakulam/contact/",
-    status: "Pending",
-  },
-  {
-    companyName: "Gregorian Public School (Maradu)",
-    jobTitle: "School Contact",
-    location: "Maradu, Ernakulam",
-    contactEmail: "gregorianschool@gmail.com",
-    contactPhone: "",
-    notes: "https://www.gregorianpublicschool.org/general-information.html",
-    status: "Pending",
-  },
-  {
-    companyName: "Bhavans Vidya Mandir (Eroor / Kunnara PO)",
-    jobTitle: "School Contact",
-    location: "Eroor / Kunnara PO, Tripunithura area",
-    contactEmail: "nirmalavenkat20@gmail.com",
-    contactPhone: "",
-    notes:
-      "https://www.thrissurkerala.com/school/cbse/ernakulam-cbse-school-codes-phone-numbers-email-address.html",
-    status: "Pending",
-  },
-  {
-    companyName: "Your institution (general contact)",
-    jobTitle: "School Contact",
-    location: "Kochi / Ernakulam region",
-    contactEmail: "info@rajagiri.org",
-    contactPhone: "",
-    notes: "https://rajagiri.org/",
-    status: "Pending",
-  },
-];
+// Removed bundledDefaultJobs; defaults now loaded only from default_jobs.json
 
 const state = { jobs: [] };
 
@@ -157,6 +65,7 @@ const tpl = document.getElementById("cardTpl");
 const modal = document.getElementById("modal");
 const jobForm = document.getElementById("jobForm");
 const modalTitle = document.getElementById("modalTitle");
+const addBtnEl = document.getElementById("addBtn");
 // Profile sheet elements
 const profileModal = document.getElementById("profileModal");
 const profileForm = document.getElementById("profileForm");
@@ -375,6 +284,7 @@ function openSheet() {
   requestAnimationFrame(() => {
     jobForm.style.transform = "translateY(0)";
   });
+  setFabVisible(false);
 }
 function closeSheet() {
   // animate down then hide
@@ -385,6 +295,7 @@ function closeSheet() {
     // reset for next open
     jobForm.style.transform = "translateY(100%)";
   }, 180);
+  setFabVisible(true);
 }
 
 // Profile bottom sheet
@@ -400,6 +311,7 @@ function openProfile() {
   requestAnimationFrame(() => {
     profileForm.style.transform = "translateY(0)";
   });
+  setFabVisible(false);
 }
 function closeProfile() {
   if (!profileModal || !profileForm) return;
@@ -409,6 +321,7 @@ function closeProfile() {
     profileModal.classList.remove("flex");
     profileForm.style.transform = "translateY(100%)";
   }, 180);
+  setFabVisible(true);
 }
 
 function openAdd() {
@@ -549,18 +462,24 @@ if (exportBtn) {
   });
 }
 
-// Initial load: load from localStorage; if empty, load bundled default + attempt to fetch default_jobs.json and merge
+// Initial load: load from localStorage; if empty, load defaults from default_jobs.json
 load();
 if (!state.jobs || state.jobs.length === 0) {
-  mergeJobs(bundledDefaultJobs);
   fetch("default_jobs.json")
-    .then((r) => (r.ok ? r.json() : null))
+    .then((r) => (r.ok ? r.json() : []))
     .then((data) => {
-      if (Array.isArray(data)) mergeJobs(data);
+      if (Array.isArray(data)) {
+        mergeJobs(data);
+      }
+      render();
     })
-    .catch(() => {});
+    .catch(() => {
+      // If fetch fails, just render empty state
+      render();
+    });
+} else {
+  render();
 }
-render();
 
 // Search/filter listeners
 ["search", "statusFilter"].forEach((id) => {
@@ -647,6 +566,16 @@ render();
 // Service worker registration
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js").catch(console.error);
+}
+
+// FAB visibility helper (show only on listing view; hide over sheets)
+function setFabVisible(show) {
+  if (!addBtnEl) return;
+  if (show) {
+    addBtnEl.classList.remove("hidden");
+  } else {
+    addBtnEl.classList.add("hidden");
+  }
 }
 
 // Theme toggle

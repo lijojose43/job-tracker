@@ -1,92 +1,246 @@
 [
   {
-    "companyName": "The Choice School (Tripunithura)",
+    "id": null,
+    "companyName": "Rajagiri (general contact) — note: campus/branches vary",
     "jobTitle": "School Contact",
-    "location": "Nadama East, Tripunithura",
-    "contactEmail": "adminschool@choicegroup.in",
+    "location": "Kochi / Ernakulam region",
+    "contactEmail": "info@rajagiri.org",
     "contactPhone": "",
-    "notes": "https://choiceschool.com/contact-us/",
-    "status": "Pending"
+    "notes": "https://rajagiri.org/",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
   },
   {
-    "companyName": "Bhavan's Munshi Vidyashram (Thiruvamkulam)",
-    "jobTitle": "School Contact",
-    "location": "Thiruvamkulam, Tripunithura",
-    "contactEmail": "bhavansthiruvamkulam@yahoo.co.in",
-    "contactPhone": "",
-    "notes": "https://www.bmvthiruvamkulam.ac.in/contact-us",
-    "status": "Pending"
-  },
-  {
-    "companyName": "Chinmaya Vidyalaya (Tripunithura)",
-    "jobTitle": "School Contact",
-    "location": "Kannankulangara, Tripunithura",
-    "contactEmail": "chinmayavidyalayatripunithura@gmail.com",
-    "contactPhone": "",
-    "notes": "https://chinmayavidyalaya.edu.in/page?content=students",
-    "status": "Pending"
-  },
-  {
-    "companyName": "Sanskara School (Infopark/Phase II)",
-    "jobTitle": "School Contact",
-    "location": "Infopark/Phase II, Kochi",
-    "contactEmail": "info@sanskaraschool.com",
-    "contactPhone": "",
-    "notes": "https://sanskaraschool.com/contact-us",
-    "status": "Pending"
-  },
-  {
-    "companyName": "Assisi Vidyaniketan Public School (Kakkanad)",
-    "jobTitle": "School Contact",
-    "location": "Chembumukku, Thrikkakara (Kakkanad)",
-    "contactEmail": "assisipublic@assisi.ac.in",
-    "contactPhone": "",
-    "notes": "https://assisi.ac.in/",
-    "status": "Pending"
-  },
-  {
-    "companyName": "Rajagiri Seashore CMI School",
-    "jobTitle": "School Contact",
-    "location": "South Malippuram / near Tripunithura region",
-    "contactEmail": "rajagiriseashore@gmail.com",
-    "contactPhone": "",
-    "notes": "https://rajagiriseashore.com/contact-us/",
-    "status": "Pending"
-  },
-  {
-    "companyName": "MGM Public School (Ernakulam)",
-    "jobTitle": "School Contact",
-    "location": "Ernakulam",
-    "contactEmail": "mgmps@mgmedugroup.com",
-    "contactPhone": "",
-    "notes": "https://mgmschool.com/ernakulam/contact/",
-    "status": "Pending"
-  },
-  {
-    "companyName": "Gregorian Public School (Maradu)",
-    "jobTitle": "School Contact",
-    "location": "Maradu, Ernakulam",
-    "contactEmail": "gregorianschool@gmail.com",
-    "contactPhone": "",
-    "notes": "https://www.gregorianpublicschool.org/general-information.html",
-    "status": "Pending"
-  },
-  {
+    "id": null,
     "companyName": "Bhavans Vidya Mandir (Eroor / Kunnara PO)",
     "jobTitle": "School Contact",
     "location": "Eroor / Kunnara PO, Tripunithura area",
     "contactEmail": "nirmalavenkat20@gmail.com",
     "contactPhone": "",
     "notes": "https://www.thrissurkerala.com/school/cbse/ernakulam-cbse-school-codes-phone-numbers-email-address.html",
-    "status": "Pending"
+    "status": "Applied",
+    "createdAt": "2025-11-27T03:16:54.268Z",
+    "updatedAt": "2025-11-27T16:57:38.185Z"
   },
   {
-    "companyName": "Your institution (general contact)",
+    "id": null,
+    "companyName": "Gregorian Public School (Maradu)",
     "jobTitle": "School Contact",
-    "location": "Kochi / Ernakulam region",
-    "contactEmail": "info@rajagiri.org",
+    "location": "Maradu, Ernakulam",
+    "contactEmail": "gregorianschool@gmail.com",
     "contactPhone": "",
-    "notes": "https://rajagiri.org/",
-    "status": "Pending"
+    "notes": "https://www.gregorianpublicschool.org/general-information.html",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
+  },
+  {
+    "id": null,
+    "companyName": "MGM Public School (Ernakulam)",
+    "jobTitle": "School Contact",
+    "location": "Ernakulam",
+    "contactEmail": "mgmps@mgmedugroup.com",
+    "contactPhone": "",
+    "notes": "https://mgmschool.com/ernakulam/contact/",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
+  },
+  {
+    "id": null,
+    "companyName": "Rajagiri Seashore CMI School",
+    "jobTitle": "School Contact",
+    "location": "South Malippuram / near Tripunithura region",
+    "contactEmail": "rajagiriseashore@gmail.com",
+    "contactPhone": "",
+    "notes": "https://rajagiriseashore.com/contact-us/",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
+  },
+  {
+    "id": null,
+    "companyName": "Assisi Vidyaniketan Public School (Kakkanad)",
+    "jobTitle": "School Contact",
+    "location": "Chembumukku, Thrikkakara (Kakkanad)",
+    "contactEmail": "assisipublic@assisi.ac.in",
+    "contactPhone": "",
+    "notes": "https://assisi.ac.in/",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
+  },
+  {
+    "id": null,
+    "companyName": "Sanskara School (Infopark/Phase II)",
+    "jobTitle": "School Contact",
+    "location": "Infopark/Phase II, Kochi",
+    "contactEmail": "info@sanskaraschool.com",
+    "contactPhone": "",
+    "notes": "https://sanskaraschool.com/contact-us",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
+  },
+  {
+    "id": null,
+    "companyName": "Chinmaya Vidyalaya (Tripunithura)",
+    "jobTitle": "School Contact",
+    "location": "Kannankulangara, Tripunithura",
+    "contactEmail": "chinmayavidyalayatripunithura@gmail.com",
+    "contactPhone": "",
+    "notes": "https://chinmayavidyalaya.edu.in/page?content=students",
+    "status": "Responded",
+    "createdAt": "2025-11-27T03:16:54.268Z",
+    "updatedAt": "2025-11-27T11:28:56.252Z"
+  },
+  {
+    "id": null,
+    "companyName": "Bhavan's Munshi Vidyashram (Thiruvamkulam)",
+    "jobTitle": "School Contact",
+    "location": "Thiruvamkulam, Tripunithura",
+    "contactEmail": "bhavansthiruvamkulam@yahoo.co.in",
+    "contactPhone": "",
+    "notes": "https://www.bmvthiruvamkulam.ac.in/contact-us",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
+  },
+  {
+    "id": null,
+    "companyName": "The Choice School (Tripunithura)",
+    "jobTitle": "School Contact",
+    "location": "Nadama East, Tripunithura",
+    "contactEmail": "adminschool@choicegroup.in",
+    "contactPhone": "",
+    "notes": "https://choiceschool.com/contact-us/",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
+  },
+  {
+    "id": null,
+    "companyName": "Global Public School (GPS Kochi)",
+    "jobTitle": "School Contact",
+    "location": "Thiruvamkulam, Kochi",
+    "contactEmail": "mail@gps.ac.in",
+    "contactPhone": "",
+    "notes": "https://www.globalpublicschool.org/contact",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
+  },
+  {
+    "id": null,
+    "companyName": "DPS Kochi (Delhi Public School)",
+    "jobTitle": "School Contact",
+    "location": "Kodungallur–Eloor Rd, Kochi",
+    "contactEmail": "contact@dpscochin.org",
+    "contactPhone": "",
+    "notes": "https://www.dpscochin.org/contact-us/",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
+  },
+  {
+    "id": null,
+    "companyName": "Haji Sophiya Public School",
+    "jobTitle": "School Contact",
+    "location": "Kochi / Ernakulam",
+    "contactEmail": "hajisophiya@gmail.com",
+    "contactPhone": "",
+    "notes": "Well-known English medium school in Kochi region",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
+  },
+  {
+    "id": null,
+    "companyName": "Mar Thoma Public School",
+    "jobTitle": "School Contact",
+    "location": "Udayamperoor / Tripunithura",
+    "contactEmail": "mtpschool@gmail.com",
+    "contactPhone": "",
+    "notes": "CBSE school; strong academic background.",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
+  },
+  {
+    "id": null,
+    "companyName": "Vivekananda Public School",
+    "jobTitle": "School Contact",
+    "location": "Nalanda Nagar, Tripunithura",
+    "contactEmail": "vivekanandapublicschool@gmail.com",
+    "contactPhone": "",
+    "notes": "Well-known CBSE institution in Tripunithura.",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
+  },
+  {
+    "id": null,
+    "companyName": "Sri Sankara Vidyapeetam Public School",
+    "jobTitle": "School Contact",
+    "location": "Eroor, Tripunithura",
+    "contactEmail": "ssvpschool@gmail.com",
+    "contactPhone": "",
+    "notes": "Popular school offering CBSE curriculum.",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
+  },
+  {
+    "id": null,
+    "companyName": "Bhavan's Adarsha Vidyalaya",
+    "jobTitle": "School Contact",
+    "location": "Kakkanad, Kochi",
+    "contactEmail": "adavschool@gmail.com",
+    "contactPhone": "",
+    "notes": "Prominent CBSE school under Bharatiya Vidya Bhavan.",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
+  },
+  {
+    "id": null,
+    "companyName": "St. Mary's Public School",
+    "jobTitle": "School Contact",
+    "location": "Vazakkala, near Kakkanad",
+    "contactEmail": "stmaryspublicvkl@gmail.com",
+    "contactPhone": "",
+    "notes": "Located between Edappally and Kakkanad.",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
+  },
+  {
+    "id": null,
+    "companyName": "Gregorian Public School (Kakkanad Branch)",
+    "jobTitle": "School Contact",
+    "location": "Kakkanad, Kochi",
+    "contactEmail": "gpskakkanad@gmail.com",
+    "contactPhone": "",
+    "notes": "A branch of the well-known Maradu school.",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
+  },
+  {
+    "id": null,
+    "companyName": "Campion School",
+    "jobTitle": "School Contact",
+    "location": "Fort Kochi",
+    "contactEmail": "campionschoolkochi@gmail.com",
+    "contactPhone": "",
+    "notes": "One of the oldest English-medium schools in Fort Kochi.",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
+  },
+  {
+    "id": null,
+    "companyName": "St. Teresa's CGHSS",
+    "jobTitle": "School Contact",
+    "location": "Ernakulam",
+    "contactEmail": "stteresacghss@gmail.com",
+    "contactPhone": "",
+    "notes": "Historic girls' school near Ernakulam South.",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
+  },
+  {
+    "id": null,
+    "companyName": "Guardian Angels Public School",
+    "jobTitle": "School Contact",
+    "location": "Manjummel, Kochi",
+    "contactEmail": "gapublicschool@gmail.com",
+    "contactPhone": "",
+    "notes": "CBSE school in Kochi's northern zone.",
+    "status": "Pending",
+    "createdAt": "2025-11-27T03:16:54.268Z"
   }
 ]
