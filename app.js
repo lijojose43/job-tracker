@@ -158,7 +158,7 @@ function sendEmail(companyName, email) {
   const job = { companyName };
   const { subject, body } = buildEmailTemplate(job);
   const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(
-    subject
+    subject,
   )}&body=${encodeURIComponent(body)}`;
   // Try Gmail in a new tab first
   const opened = openGmailCompose(email, subject, body);
@@ -187,7 +187,7 @@ function render() {
     list = list.filter(
       (j) =>
         (j.companyName || "").toLowerCase().includes(search) ||
-        (j.jobTitle || "").toLowerCase().includes(search)
+        (j.jobTitle || "").toLowerCase().includes(search),
     );
   if (statusFilter) list = list.filter((j) => j.status === statusFilter);
   if (sort === "newest")
@@ -224,7 +224,24 @@ function render() {
         e.preventDefault();
         sendEmail(job.companyName || "", job.contactEmail);
       });
-    } else emailA.style.display = "none";
+      emailA.classList.remove(
+        "opacity-50",
+        "pointer-events-none",
+        "cursor-not-allowed",
+      );
+      emailA.classList.add("hover:text-teal-400");
+    } else {
+      emailA.href = "#";
+      emailA.classList.add(
+        "opacity-50",
+        "pointer-events-none",
+        "cursor-not-allowed",
+      );
+      emailA.classList.remove("hover:text-teal-400");
+      emailA.addEventListener("click", (e) => {
+        e.preventDefault();
+      });
+    }
     if (job.contactPhone) {
       phoneA.href = "tel:" + job.contactPhone;
     } else phoneA.style.display = "none";
@@ -409,7 +426,7 @@ if (profileForm) {
 document
   .getElementById("importBtn")
   .addEventListener("click", () =>
-    document.getElementById("fileInput").click()
+    document.getElementById("fileInput").click(),
   );
 document.getElementById("fileInput").addEventListener("change", (e) => {
   const file = e.target.files[0];
