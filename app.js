@@ -250,14 +250,15 @@ function render() {
       websiteA.href = ensureHttp(websiteRaw);
     } else websiteA.style.display = "none";
 
-    const mapsQueryRaw = (
+    const destinationQuery = (
       (job.companyName || "") +
       " " +
       (job.location || "")
     ).trim();
-    if (mapsQueryRaw) {
-      const q = encodeURIComponent(mapsQueryRaw);
-      mapsA.href = `https://www.google.com/maps/search/?api=1&query=${q}`;
+    if (destinationQuery) {
+      const origin = "9.938821,+76.372648";
+      const destination = encodeURIComponent(destinationQuery);
+      mapsA.href = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}`;
     } else {
       mapsA.style.display = "none";
     }
