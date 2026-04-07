@@ -60,16 +60,101 @@ function removeJob(id) {
 }
 
 // Elements
-const cardsEl = document.getElementById("cards");
-const tpl = document.getElementById("cardTpl");
+const addBtnEl = document.getElementById("addBtn");
 const modal = document.getElementById("modal");
 const jobForm = document.getElementById("jobForm");
 const modalTitle = document.getElementById("modalTitle");
-const addBtnEl = document.getElementById("addBtn");
-// Profile sheet elements
+const cancelBtn = document.getElementById("cancelBtn");
+const cardsEl = document.getElementById("cards");
+const searchEl = document.getElementById("search");
+const statusFilterEl = document.getElementById("statusFilter");
+const fileInputEl = document.getElementById("fileInput");
+const importBtnEl = document.getElementById("importBtn");
+const exportBtnEl = document.getElementById("exportBtn");
+const themeToggleBtn = document.getElementById("themeToggleBtn");
+const profileBtn = document.getElementById("profileBtn");
 const profileModal = document.getElementById("profileModal");
 const profileForm = document.getElementById("profileForm");
+const profileCancelBtn = document.getElementById("profileCancelBtn");
+const tpl = document.getElementById("cardTpl");
+
+// Bulk action elements
+const bulkActionsEl = document.getElementById("bulkActions");
+const selectAllBtn = document.getElementById("selectAllBtn");
+const deselectAllBtn = document.getElementById("deselectAllBtn");
+const bulkStatusSelect = document.getElementById("bulkStatusSelect");
+const bulkDeleteBtn = document.getElementById("bulkDeleteBtn");
+const selectedCountEl = document.getElementById("selectedCount");
+
+// Multi-select state
+let selectedJobs = new Set();
 let editId = null;
+
+// Multi-select helpers
+function updateBulkActionsVisibility() {
+  const hasSelection = selectedJobs.size > 0;
+  bulkActionsEl.classList.toggle("hidden", !hasSelection);
+  selectedCountEl.textContent = `${selectedJobs.size} selected`;
+}
+
+function selectAllJobs() {
+  const checkboxes = document.querySelectorAll(".job-select");
+  checkboxes.forEach((cb) => {
+    cb.checked = true;
+    selectedJobs.add(cb.dataset.jobId);
+  });
+  updateBulkActionsVisibility();
+}
+
+function deselectAllJobs() {
+  const checkboxes = document.querySelectorAll(".job-select");
+  checkboxes.forEach((cb) => {
+    cb.checked = false;
+  });
+  selectedJobs.clear();
+  updateBulkActionsVisibility();
+}
+
+function toggleJobSelection(jobId, checked) {
+  if (checked) {
+    selectedJobs.add(jobId);
+  } else {
+    selectedJobs.delete(jobId);
+  }
+  updateBulkActionsVisibility();
+}
+
+function bulkChangeStatus(newStatus) {
+  if (!newStatus || selectedJobs.size === 0) return;
+
+  selectedJobs.forEach((jobId) => {
+    const job = state.jobs.find((j) => j.id === jobId);
+    if (job) {
+      job.status = newStatus;
+      job.updatedAt = nowTs();
+    }
+  });
+
+  save();
+  render();
+}
+
+function bulkDelete() {
+  if (selectedJobs.size === 0) return;
+
+  if (
+    !confirm(
+      `Delete ${selectedJobs.size} selected job${selectedJobs.size > 1 ? "s" : ""}? This cannot be undone.`,
+    )
+  ) {
+    return;
+  }
+
+  state.jobs = state.jobs.filter((job) => !selectedJobs.has(job.id));
+  selectedJobs.clear();
+  save();
+  render();
+}
 
 // Helpers
 function ensureHttp(url) {
@@ -176,6 +261,36 @@ function sendEmail(companyName, email) {
 }
 window.sendEmail = sendEmail;
 
+function updateSummaryCards() {
+  const jobs = state.jobs;
+  const statusCounts = {
+    Pending: 0,
+    Applied: 0,
+    Responded: 0,
+    Interview: 0,
+    Rejected: 0,
+    Hired: 0,
+  };
+
+  jobs.forEach((job) => {
+    const status = job.status || "Pending";
+    if (statusCounts.hasOwnProperty(status)) {
+      statusCounts[status]++;
+    }
+  });
+
+  document.getElementById("totalCount").textContent = jobs.length;
+  document.getElementById("pendingCount").textContent = statusCounts["Pending"];
+  document.getElementById("appliedCount").textContent = statusCounts["Applied"];
+  document.getElementById("respondedCount").textContent =
+    statusCounts["Responded"];
+  document.getElementById("interviewCount").textContent =
+    statusCounts["Interview"];
+  document.getElementById("hiredCount").textContent = statusCounts["Hired"];
+  document.getElementById("rejectedCount").textContent =
+    statusCounts["Rejected"];
+}
+
 function render() {
   const search = (document.getElementById("search").value || "").toLowerCase();
   const statusFilter = document.getElementById("statusFilter").value;
@@ -195,9 +310,19 @@ function render() {
   else
     list.sort((a, b) => (a.createdAt || "").localeCompare(b.createdAt || ""));
 
+  updateSummaryCards();
   cardsEl.innerHTML = "";
   list.forEach((job) => {
     const node = tpl.content.cloneNode(true);
+
+    // Setup checkbox
+    const checkbox = node.querySelector(".job-select");
+    checkbox.dataset.jobId = job.id;
+    checkbox.checked = selectedJobs.has(job.id);
+    checkbox.addEventListener("change", (e) => {
+      toggleJobSelection(job.id, e.target.checked);
+    });
+
     node.querySelector(".company").textContent = job.companyName || "—";
     node.querySelector(".jobTitle").textContent = job.jobTitle || "";
     node.querySelector(".location").textContent = job.location || "";
@@ -397,9 +522,25 @@ const profileBtnEl = document.getElementById("profileBtn");
 if (profileBtnEl) {
   profileBtnEl.addEventListener("click", openProfile);
 }
-const profileCancelBtn = document.getElementById("profileCancelBtn");
 if (profileCancelBtn) {
   profileCancelBtn.addEventListener("click", closeProfile);
+}
+
+// Bulk action listeners
+if (selectAllBtn) {
+  selectAllBtn.addEventListener("click", selectAllJobs);
+}
+if (deselectAllBtn) {
+  deselectAllBtn.addEventListener("click", deselectAllJobs);
+}
+if (bulkStatusSelect) {
+  bulkStatusSelect.addEventListener("change", (e) => {
+    bulkChangeStatus(e.target.value);
+    e.target.value = ""; // Reset select
+  });
+}
+if (bulkDeleteBtn) {
+  bulkDeleteBtn.addEventListener("click", bulkDelete);
 }
 
 // Profile form submit

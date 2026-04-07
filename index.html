@@ -78,6 +78,57 @@
         </select>
       </div>
     </section>
+    <!-- Bulk Actions Section -->
+    <section id="bulkActions" class="hidden mb-4 p-3 backdrop-blur rounded-lg border border-slate-700/50">
+      <div class="flex flex-wrap items-center gap-3">
+        <button id="selectAllBtn" class="px-3 py-1.5 text-sm bg-white hover:bg-gray-100 text-slate-900 border border-slate-300 rounded-md transition-colors">Select All</button>
+        <button id="deselectAllBtn" class="px-3 py-1.5 text-sm bg-white hover:bg-gray-100 text-slate-900 border border-slate-300 rounded-md transition-colors">Deselect All</button>
+        <div class="h-4 w-px bg-slate-600"></div>
+        <select id="bulkStatusSelect" class="px-3 py-1.5 text-sm bg-white border border-slate-300 text-slate-900 rounded-md">
+          <option value="">Change Status</option>
+          <option value="Pending">Pending</option>
+          <option value="Applied">Applied</option>
+          <option value="Responded">Responded</option>
+          <option value="Interview">Interview</option>
+          <option value="Rejected">Rejected</option>
+          <option value="Hired">Hired</option>
+        </select>
+        <button id="bulkDeleteBtn" class="px-3 py-1.5 text-sm bg-red-600 hover:bg-red-500 text-white rounded-md transition-colors">Delete Selected</button>
+        <span id="selectedCount" class="text-sm text-slate-400">0 selected</span>
+      </div>
+    </section>
+
+    <!-- Summary Cards Section -->
+    <section id="summaryCards" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 mb-6">
+      <div class="summary-card bg-slate-800/80 backdrop-blur rounded-xl border border-slate-700/70 p-3 text-center">
+        <div class="text-2xl font-bold text-teal-400" id="totalCount">0</div>
+        <div class="text-xs text-slate-400 mt-1">Total Jobs</div>
+      </div>
+      <div class="summary-card bg-slate-800/80 backdrop-blur rounded-xl border border-slate-700/70 p-3 text-center">
+        <div class="text-2xl font-bold text-yellow-400" id="pendingCount">0</div>
+        <div class="text-xs text-slate-400 mt-1">Pending</div>
+      </div>
+      <div class="summary-card bg-slate-800/80 backdrop-blur rounded-xl border border-slate-700/70 p-3 text-center">
+        <div class="text-2xl font-bold text-blue-400" id="appliedCount">0</div>
+        <div class="text-xs text-slate-400 mt-1">Applied</div>
+      </div>
+      <div class="summary-card bg-slate-800/80 backdrop-blur rounded-xl border border-slate-700/70 p-3 text-center">
+        <div class="text-2xl font-bold text-purple-400" id="respondedCount">0</div>
+        <div class="text-xs text-slate-400 mt-1">Responded</div>
+      </div>
+      <div class="summary-card bg-slate-800/80 backdrop-blur rounded-xl border border-slate-700/70 p-3 text-center">
+        <div class="text-2xl font-bold text-orange-400" id="interviewCount">0</div>
+        <div class="text-xs text-slate-400 mt-1">Interview</div>
+      </div>
+      <div class="summary-card bg-slate-800/80 backdrop-blur rounded-xl border border-slate-700/70 p-3 text-center">
+        <div class="text-2xl font-bold text-green-400" id="hiredCount">0</div>
+        <div class="text-xs text-slate-400 mt-1">Hired</div>
+      </div>
+      <div class="summary-card bg-slate-800/80 backdrop-blur rounded-xl border border-slate-700/70 p-3 text-center">
+        <div class="text-2xl font-bold text-red-400" id="rejectedCount">0</div>
+        <div class="text-xs text-slate-400 mt-1">Rejected</div>
+      </div>
+    </section>
 
     <section id="cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></section>
   </main>
@@ -144,7 +195,7 @@
   </div>
 
   <template id="cardTpl">
-    <article class="p-4 bg-slate-800/80 backdrop-blur rounded-2xl border border-slate-700/70 shadow-sm flex flex-col h-full transition transform hover:-translate-y-0.5 hover:shadow-md">
+    <article class="p-4 bg-slate-800/80 backdrop-blur rounded-2xl border border-slate-700/70 shadow-sm flex flex-col h-full transition transform hover:-translate-y-0.5 hover:shadow-md relative">
       <div class="flex justify-between items-start gap-2">
         <div>
           <div class="company font-semibold text-base tracking-tight"></div>
@@ -162,6 +213,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m2 0v12a2 2 0 01-2 2H8a2 2 0 01-2-2V7h10z"/>
             </svg>
           </button>
+          <input type="checkbox" class="job-select w-4 h-4 rounded border-slate-600 bg-slate-900 text-teal-400 focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:ring-offset-slate-800" data-job-id="">
         </div>
       </div>
       <div class="mt-2 flex-1">
