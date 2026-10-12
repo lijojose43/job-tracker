@@ -169,6 +169,39 @@ function stripUrls(text) {
   return (text || "").replace(/https?:\/\/[^\s]+/gi, "").trim();
 }
 
+// Card presentation helpers (enterprise-minimal)
+const STATUS_PILL = {
+  Pending: "bg-amber-50 text-amber-800 border-amber-200",
+  Applied: "bg-blue-50 text-blue-800 border-blue-200",
+  Responded: "bg-violet-50 text-violet-800 border-violet-200",
+  Interview: "bg-orange-50 text-orange-800 border-orange-200",
+  Hired: "bg-teal-50 text-teal-800 border-teal-200",
+  Rejected: "bg-slate-100 text-slate-500 border-slate-200",
+};
+function initials(name) {
+  const words = (name || "").trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return "–";
+  return (words[0][0] + (words[1] ? words[1][0] : "")).toUpperCase();
+}
+function timeAgo(iso) {
+  if (!iso) return "";
+  const t = new Date(iso).getTime();
+  if (isNaN(t)) return "";
+  const s = Math.floor((Date.now() - t) / 1000);
+  if (s < 60) return "just now";
+  const m = Math.floor(s / 60);
+  if (m < 60) return m + "m ago";
+  const h = Math.floor(m / 60);
+  if (h < 24) return h + "h ago";
+  const d = Math.floor(h / 24);
+  if (d < 7) return d + "d ago";
+  return new Date(iso).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 // Optional user profile (name/phone/email) from localStorage
 function getUserProfile() {
   try {
@@ -324,14 +357,30 @@ function render() {
     });
 
     node.querySelector(".company").textContent = job.companyName || "—";
-    node.querySelector(".jobTitle").textContent = job.jobTitle || "";
+    node.querySelector(".avatar").textContent = initials(job.companyName);
+    const jobTitleEl = node.querySelector(".jobTitle");
+    const rawTitle = (job.jobTitle || "").trim();
+    if (!rawTitle || rawTitle.toLowerCase() === "school contact") {
+      jobTitleEl.style.display = "none";
+    } else {
+      jobTitleEl.textContent = job.jobTitle;
+    }
+    const locRow = node.querySelector(".locationRow");
     node.querySelector(".location").textContent = job.location || "";
-    node.querySelector(".notes").textContent = stripUrls(job.notes) || "";
-    node.querySelector("time.timestamp").textContent = job.createdAt
-      ? new Date(job.createdAt).toLocaleString()
-      : "";
+    if (locRow) locRow.style.display = job.location ? "" : "none";
+    const notesEl = node.querySelector(".notes");
+    const cleanNotes = stripUrls(job.notes);
+    if (!cleanNotes) {
+      notesEl.style.display = "none";
+    } else {
+      notesEl.textContent = cleanNotes;
+    }
+    const timeEl = node.querySelector("time.timestamp");
+    timeEl.textContent = timeAgo(job.createdAt || job.updatedAt);
+    timeEl.title = job.createdAt ? new Date(job.createdAt).toLocaleString() : "";
 
     const emailA = node.querySelector("a.email");
+    const emailText = node.querySelector(".emailText");
     const phoneA = node.querySelector("a.phone");
     const websiteA = node.querySelector("a.website");
     const mapsA = node.querySelector("a.maps");
@@ -349,23 +398,10 @@ function render() {
         e.preventDefault();
         sendEmail(job.companyName || "", job.contactEmail);
       });
-      emailA.classList.remove(
-        "opacity-50",
-        "pointer-events-none",
-        "cursor-not-allowed",
-      );
-      emailA.classList.add("hover:text-teal-400");
+      emailA.style.display = "";
+      if (emailText) emailText.textContent = job.contactEmail;
     } else {
-      emailA.href = "#";
-      emailA.classList.add(
-        "opacity-50",
-        "pointer-events-none",
-        "cursor-not-allowed",
-      );
-      emailA.classList.remove("hover:text-teal-400");
-      emailA.addEventListener("click", (e) => {
-        e.preventDefault();
-      });
+      emailA.style.display = "none";
     }
     if (job.contactPhone) {
       phoneA.href = "tel:" + job.contactPhone;
@@ -388,6 +424,21 @@ function render() {
       mapsA.style.display = "none";
     }
 
+    // Group visible contact/action buttons with dividers
+    const contactRow = node.querySelector(".contactRow");
+    if (contactRow) {
+      const items = Array.from(contactRow.children).filter(
+        (el) => el.style.display !== "none",
+      );
+      items.forEach((el, i) => {
+        if (i > 0) {
+          const div = document.createElement("div");
+          div.className = "rowDiv h-5 w-px bg-slate-200 shrink-0";
+          contactRow.insertBefore(div, el);
+        }
+      });
+    }
+
     const statusSel = node.querySelector("select.statusSelect");
     [
       "Pending",
@@ -403,6 +454,10 @@ function render() {
       statusSel.appendChild(opt);
     });
     statusSel.value = job.status || "Pending";
+    const status = job.status || "Pending";
+    statusSel.className =
+      "statusSelect field rounded-full pl-3 pr-8 py-1.5 border text-[12px] font-semibold cursor-pointer " +
+      (STATUS_PILL[status] || STATUS_PILL.Pending);
     statusSel.addEventListener("change", () => {
       job.status = statusSel.value;
       job.updatedAt = nowTs();
@@ -417,6 +472,8 @@ function render() {
 
     cardsEl.appendChild(node);
   });
+  const emptyHint = document.getElementById("emptyHint");
+  if (emptyHint) emptyHint.classList.toggle("hidden", list.length > 0);
 }
 
 // Modal handling (bottom sheet)
@@ -641,7 +698,7 @@ if (!state.jobs || state.jobs.length === 0) {
 }
 
 // Search/filter listeners
-["search", "statusFilter"].forEach((id) => {
+["search", "statusFilter", "sort"].forEach((id) => {
   const el = document.getElementById(id);
   if (el) el.addEventListener("input", render);
 });
@@ -743,31 +800,31 @@ function setFabVisible(show) {
   const btn = document.getElementById("themeToggleBtn");
   const icon = document.getElementById("themeIcon");
   function apply(theme) {
-    const light = theme === "light";
-    document.body.classList.toggle("theme-light", light);
+    const dark = theme === "dark";
+    document.body.classList.toggle("theme-dark", dark);
     // Show icon for NEXT theme: sun when currently dark (to switch to light), moon when currently light
     if (icon) {
-      icon.innerHTML = light
-        ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>'
-        : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v2m0 14v2m9-9h-2M5 12H3m14.95 6.95l-1.414-1.414M7.464 7.464L6.05 6.05m12.9 0l-1.414 1.414M7.464 16.536L6.05 17.95M12 8a4 4 0 100 8 4 4 0 000-8z"/>';
+      icon.innerHTML = dark
+        ? '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>'
+        : '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>';
     }
     if (btn) {
-      btn.title = light ? "Switch to dark theme" : "Switch to light theme";
+      btn.title = dark ? "Switch to light theme" : "Switch to dark theme";
       btn.setAttribute("aria-label", btn.title);
     }
     // Ensure status bar (time section) color matches app theme color
     const themeMeta = document.querySelector('meta[name="theme-color"]');
     if (themeMeta) {
-      themeMeta.setAttribute("content", light ? "#f8fafc" : "#0f172a");
+      themeMeta.setAttribute("content", dark ? "#0b1220" : "#ffffff");
     }
     localStorage.setItem(THEME_KEY, theme);
   }
-  const saved = localStorage.getItem(THEME_KEY) || "dark";
+  const saved = localStorage.getItem(THEME_KEY) || "light";
   apply(saved);
   if (btn) {
     btn.addEventListener("click", () => {
       const next =
-        (localStorage.getItem(THEME_KEY) || "dark") === "dark"
+        (localStorage.getItem(THEME_KEY) || "light") === "dark"
           ? "light"
           : "dark";
       apply(next);
