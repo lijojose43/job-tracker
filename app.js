@@ -178,6 +178,14 @@ const STATUS_PILL = {
   Hired: "bg-teal-50 text-teal-800 border-teal-200",
   Rejected: "bg-slate-100 text-slate-500 border-slate-200",
 };
+const STATUS_BAR = {
+  Pending: "bg-amber-400",
+  Applied: "bg-blue-500",
+  Responded: "bg-violet-500",
+  Interview: "bg-orange-500",
+  Hired: "bg-teal-500",
+  Rejected: "bg-slate-300",
+};
 function initials(name) {
   const words = (name || "").trim().split(/\s+/).filter(Boolean);
   if (!words.length) return "–";
@@ -456,8 +464,12 @@ function render() {
     statusSel.value = job.status || "Pending";
     const status = job.status || "Pending";
     statusSel.className =
-      "statusSelect field rounded-full pl-3 pr-8 py-1.5 border text-[12px] font-semibold cursor-pointer " +
+      "statusSelect field ml-auto shrink-0 rounded-full pl-3 pr-8 py-1.5 border text-[12px] font-semibold cursor-pointer " +
       (STATUS_PILL[status] || STATUS_PILL.Pending);
+    const barEl = node.querySelector(".statusBar");
+    if (barEl)
+      barEl.className =
+        "statusBar h-[3px] w-full " + (STATUS_BAR[status] || "bg-slate-200");
     statusSel.addEventListener("change", () => {
       job.status = statusSel.value;
       job.updatedAt = nowTs();

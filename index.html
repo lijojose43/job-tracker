@@ -30,8 +30,11 @@
     body.theme-dark .surface-soft { background-color: #0f1a2e !important; border-color: #243349 !important; }
     body.theme-dark .muted { color: #94a3b8 !important; }
     body.theme-dark .field { background-color: #0b1426 !important; border-color: #243349 !important; color: #e2e8f0 !important; }
-    body.theme-dark .iconbtn { border-color: #243349 !important; color: #cbd5e1 !important; }
-    body.theme-dark .iconbtn:hover { background-color: #1a2740 !important; }
+    body.theme-dark .iconbtn { border-color: #243349 !important; color: #cbd5e1 !important; background-color: #111c30 !important; }
+    body.theme-dark .iconbtn:hover { background-color: #1a2740 !important; color: #fff !important; }
+    body.theme-dark .segdiv { background-color: #243349 !important; }
+    body.theme-dark .sitelink { color: #94a3b8 !important; }
+    body.theme-dark .sitelink:hover { color: #fff !important; }
     body.theme-dark .contactRow { background-color: #0b1426 !important; border-color: #243349 !important; }
     body.theme-dark .contactRow .rowDiv { background-color: #243349 !important; }
   </style>
@@ -48,15 +51,15 @@
         <span class="hidden sm:inline-flex text-[11px] font-semibold uppercase tracking-wider text-teal-800 bg-teal-50 border border-teal-200 rounded-full px-2.5 py-1">Workspace</span>
       </div>
       <div class="flex items-center gap-1.5">
-        <a href="landing.html" class="hidden sm:inline-flex text-[13.5px] font-medium text-slate-500 hover:text-slate-900 px-2 py-2 mr-1">← Site</a>
+        <a href="landing.html" class="sitelink hidden sm:inline-flex text-[13.5px] font-medium text-slate-500 hover:text-slate-900 px-2 py-2 mr-1">← Site</a>
         <input id="fileInput" type="file" accept="application/json" class="hidden" />
-        <div class="flex items-center rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+        <div class="surface flex items-center rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
           <button id="importBtn" class="iconbtn p-2.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition" aria-label="Import JSON" title="Import JSON">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /><path d="M12 15V3" />
             </svg>
           </button>
-          <div class="h-5 w-px bg-slate-200"></div>
+          <div class="segdiv h-5 w-px bg-slate-200"></div>
           <button id="exportBtn" class="iconbtn p-2.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition" aria-label="Export JSON" title="Export JSON">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m17 8-5-5-5 5" /><path d="M12 3v12" />
@@ -241,6 +244,7 @@
 
   <template id="cardTpl">
     <article class="surface card-hover bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col h-full relative overflow-hidden">
+      <div class="statusBar h-[3px] w-full bg-slate-200"></div>
       <div class="p-5 flex flex-col flex-1">
         <div class="flex items-start gap-3">
           <div class="avatar w-10 h-10 rounded-xl bg-slate-900 text-white text-[13px] font-bold flex items-center justify-center shrink-0 tracking-wide">–</div>
@@ -259,7 +263,8 @@
           <input type="checkbox" class="job-select mt-1 w-[18px] h-[18px] rounded-md border-slate-300 text-slate-900 focus:ring-slate-900 shrink-0 cursor-pointer" data-job-id="" title="Select">
         </div>
         <p class="notes mt-3 text-[13.5px] text-slate-600 leading-relaxed line-clamp-2"></p>
-        <div class="contactRow mt-3 flex items-center rounded-xl border border-slate-200 bg-slate-50/60 w-fit max-w-full overflow-hidden">
+        <div class="mt-3 flex items-center gap-2">
+          <div class="contactRow flex items-center rounded-xl border border-slate-200 bg-slate-50/60 shrink-0 overflow-hidden">
           <a class="phone p-2.5 text-slate-400 hover:text-slate-900 hover:bg-white transition" aria-label="Call" title="Call">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" class="w-4 h-4">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h1.28a1 1 0 01.95.684l1.12 3.36a1 1 0 01-.27 1.04l-1.2 1.2a16 16 0 006.72 6.72l1.2-1.2a1 1 0 011.04-.27l3.36 1.12a1 1 0 01.684.95V19a2 2 0 01-2 2h-1C9.163 21 3 14.837 3 7V6a1 1 0 011-1z"/>
@@ -288,10 +293,9 @@
             </svg>
           </button>
         </div>
-        <div class="mt-4 flex items-center justify-between gap-2">
-          <select class="statusSelect field rounded-full pl-3 pr-8 py-1.5 border border-slate-200 text-[12px] font-semibold cursor-pointer"></select>
-          <time class="timestamp text-[11.5px] text-slate-400 tabular-nums" title=""></time>
+          <select class="statusSelect field ml-auto shrink-0 rounded-full pl-3 pr-8 py-1.5 border border-slate-200 text-[12px] font-semibold cursor-pointer"></select>
         </div>
+        <time class="timestamp mt-2 block text-right text-[11.5px] text-slate-400 tabular-nums" title=""></time>
       </div>
     </article>
   </template>
