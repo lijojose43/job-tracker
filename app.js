@@ -226,7 +226,7 @@ function getUserProfile() {
 function buildEmailTemplate(job) {
   const profile = getUserProfile();
   const school = job.companyName || "Your School";
-  const subject = "Application for a Teaching Position";
+  const subject = "Application for Biology Teacher Position";
   const name =
     profile && profile.name && profile.name !== "Your Name"
       ? profile.name
