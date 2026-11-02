@@ -156,6 +156,53 @@ function bulkDelete() {
   render();
 }
 
+function bulkEmail() {
+  if (selectedJobs.size === 0) return;
+
+  const jobsToEmail = Array.from(selectedJobs)
+    .map((id) => state.jobs.find((j) => j.id === id))
+    .filter((j) => j && j.contactEmail);
+
+  if (jobsToEmail.length === 0) {
+    alert("No selected jobs have email addresses.");
+    return;
+  }
+
+  if (
+    !confirm(
+      `Open ${jobsToEmail.length} email${jobsToEmail.length > 1 ? "s" : ""} in new tabs?`
+    )
+  ) {
+    return;
+  }
+
+  jobsToEmail.forEach((job) => {
+    const { subject, body } = buildEmailTemplate(job);
+    const mailtoLink = `mailto:${job.contactEmail}?subject=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(body)}`;
+
+    // Try Gmail first
+    const params = new URLSearchParams({
+      view: "cm",
+      fs: "1",
+      to: job.contactEmail,
+      su: subject,
+      body: body,
+    });
+    const gmailUrl = `https://mail.google.com/mail/?${params.toString()}`;
+
+    // Open Gmail in new tab
+    window.open(gmailUrl, "_blank", "noopener,noreferrer");
+
+    // Small delay to avoid popup blockers
+    setTimeout(() => {
+      // Fallback to mailto if needed
+      window.location.href = mailtoLink;
+    }, 100);
+  });
+}
+
 // Helpers
 function ensureHttp(url) {
   if (!url) return "";
@@ -273,8 +320,44 @@ function openGmailCompose(to, subject, body) {
       body,
     });
     const gmailUrl = `https://mail.google.com/mail/?${params.toString()}`;
-    const w = window.open(gmailUrl, "_blank", "noopener");
-    return !!w;
+    // Open a small centered popup window instead of a full new tab
+    const width = 780;
+    const height = 720;
+    const left = Math.max(
+      0,
+      Math.round(
+        (window.screenX || window.screenLeft || 0) +
+          ((window.outerWidth || width) - width) / 2,
+      ),
+    );
+    const topPos = Math.max(
+      0,
+      Math.round(
+        (window.screenY || window.screenTop || 0) +
+          ((window.outerHeight || height) - height) / 2,
+      ),
+    );
+    const features = [
+      "popup=yes",
+      `width=${width}`,
+      `height=${height}`,
+      `left=${left}`,
+      `top=${topPos}`,
+      "resizable=yes",
+      "scrollbars=yes",
+    ].join(",");
+    // Reuse the same named window so repeated clicks don't pile up popups
+    const w = window.open(gmailUrl, "gmailComposeWindow", features);
+    if (w) {
+      try {
+        w.opener = null;
+      } catch (_err) {}
+      try {
+        w.focus();
+      } catch (_err) {}
+      return true;
+    }
+    return false;
   } catch (_e) {
     return false;
   }
@@ -610,6 +693,9 @@ if (bulkStatusSelect) {
 }
 if (bulkDeleteBtn) {
   bulkDeleteBtn.addEventListener("click", bulkDelete);
+}
+if (bulkEmailBtn) {
+  bulkEmailBtn.addEventListener("click", bulkEmail);
 }
 
 // Profile form submit
