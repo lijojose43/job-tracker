@@ -76,6 +76,13 @@ const profileBtn = document.getElementById("profileBtn");
 const profileModal = document.getElementById("profileModal");
 const profileForm = document.getElementById("profileForm");
 const profileCancelBtn = document.getElementById("profileCancelBtn");
+const aiPromptModal = document.getElementById("aiPromptModal");
+const aiPromptForm = document.getElementById("aiPromptForm");
+const aiPromptOutput = document.getElementById("aiPromptOutput");
+const aiWarnings = document.getElementById("aiWarnings");
+const aiCancelBtn = document.getElementById("aiCancelBtn");
+const aiCloseBtn = document.getElementById("aiCloseBtn");
+const aiCopyBtn = document.getElementById("aiCopyBtn");
 const tpl = document.getElementById("cardTpl");
 
 // Bulk action elements
@@ -266,15 +273,22 @@ function getUserProfile() {
         name: "Your Name",
         phone: "Your Phone",
         email: "your@email.com",
+        summary: "",
       };
     const val = JSON.parse(raw) || {};
     return {
       name: val.name || "Your Name",
       phone: val.phone || "Your Phone",
       email: val.email || "your@email.com",
+      summary: val.summary || "",
     };
   } catch (_e) {
-    return { name: "Your Name", phone: "Your Phone", email: "your@email.com" };
+    return {
+      name: "Your Name",
+      phone: "Your Phone",
+      email: "your@email.com",
+      summary: "",
+    };
   }
 }
 
@@ -560,6 +574,7 @@ function render() {
       render();
     });
 
+    node.querySelector(".aiPrompt").addEventListener("click", () => openAiPrompt(job));
     node.querySelector(".edit").addEventListener("click", () => openEdit(job));
     node.querySelector(".delete").addEventListener("click", () => {
       if (confirm("Delete this job?")) removeJob(job.id);
@@ -601,6 +616,7 @@ function openProfile() {
   if (profileForm.name) profileForm.name.value = p.name || "";
   if (profileForm.phone) profileForm.phone.value = p.phone || "";
   if (profileForm.email) profileForm.email.value = p.email || "";
+  if (profileForm.summary) profileForm.summary.value = p.summary || "";
   profileModal.classList.remove("hidden");
   profileModal.classList.add("flex");
   requestAnimationFrame(() => {
@@ -619,6 +635,128 @@ function closeProfile() {
   setFabVisible(true);
 }
 
+// AI resume prompt builder (job description + self summary -> prompt for an AI chat)
+const AI_PLACEHOLDERS = {
+  jobDescription:
+    "[ Paste the job description here — open this role in Job Tracker and fill the “Job description” field, or paste the posting directly into this prompt ]",
+  summary:
+    "[ Paste your self summary here — open Profile in Job Tracker and fill the “Self summary” field, or paste your experience, skills, and achievements directly into this prompt ]",
+};
+
+function buildAiPrompt(job) {
+  const profile = getUserProfile();
+  const jd = (job.jobDescription || "").trim() || AI_PLACEHOLDERS.jobDescription;
+  const summary = (profile.summary || "").trim() || AI_PLACEHOLDERS.summary;
+  const role = job.jobTitle || "this role";
+  const company = job.companyName || "this company";
+  return [
+    "You are an expert resume writer and career coach.",
+    "",
+    `I'm applying for the ${role} role at ${company} — use the job description below to tailor my resume.`,
+    "",
+    "--- JOB DESCRIPTION ---",
+    jd,
+    "",
+    "--- MY SELF SUMMARY (experience, skills, achievements) ---",
+    summary,
+    "",
+    "--- WHAT I NEED FROM YOU ---",
+    "1. A rewritten professional summary (2-3 sentences) written specifically for this role.",
+    "2. My experience re-framed as achievement bullets — most relevant first, using the job's own keywords for ATS.",
+    "3. Skills the job asks for that are missing from my summary, and honest ways to close those gaps.",
+    "4. A complete one-page resume in Markdown I can copy straight into a document.",
+    "5. Keep everything truthful — never invent employers, titles, dates, or numbers.",
+  ].join("\n");
+}
+
+let aiPromptJobId = null;
+
+function openAiPrompt(job) {
+  if (!aiPromptModal || !aiPromptForm) return;
+  aiPromptJobId = job.id;
+  if (aiPromptOutput) aiPromptOutput.value = buildAiPrompt(job);
+  renderAiWarnings(job);
+  aiPromptModal.classList.remove("hidden");
+  aiPromptModal.classList.add("flex");
+  requestAnimationFrame(() => {
+    aiPromptForm.style.transform = "translateY(0)";
+  });
+  setFabVisible(false);
+}
+function closeAiPrompt() {
+  if (!aiPromptModal || !aiPromptForm) return;
+  aiPromptForm.style.transform = "translateY(100%)";
+  setTimeout(() => {
+    aiPromptModal.classList.add("hidden");
+    aiPromptModal.classList.remove("flex");
+    aiPromptForm.style.transform = "translateY(100%)";
+  }, 180);
+  setFabVisible(true);
+}
+
+function renderAiWarnings(job) {
+  if (!aiWarnings) return;
+  aiWarnings.innerHTML = "";
+  const missing = [];
+  if (!(job.jobDescription || "").trim()) missing.push("jobDescription");
+  if (!(getUserProfile().summary || "").trim()) missing.push("summary");
+  if (!missing.length) {
+    aiWarnings.classList.add("hidden");
+    return;
+  }
+  aiWarnings.classList.remove("hidden");
+  const note = document.createElement("p");
+  note.textContent =
+    "This prompt has placeholders. Add the missing details for a fully tailored resume:";
+  aiWarnings.appendChild(note);
+  const row = document.createElement("div");
+  row.className = "flex flex-wrap gap-2";
+  missing.forEach((kind) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent =
+      kind === "jobDescription" ? "Add job description" : "Add self summary";
+    btn.className =
+      "px-3 py-1.5 text-[12.5px] font-semibold rounded-lg bg-amber-200/70 hover:bg-amber-300 text-amber-900 transition";
+    btn.addEventListener("click", () => {
+      const target = state.jobs.find((j) => j.id === aiPromptJobId);
+      closeAiPrompt();
+      setTimeout(() => {
+        if (kind === "jobDescription" && target) openEdit(target);
+        else openProfile();
+      }, 200);
+    });
+    row.appendChild(btn);
+  });
+  aiWarnings.appendChild(row);
+}
+
+function copyAiPrompt() {
+  const text = aiPromptOutput ? aiPromptOutput.value : "";
+  if (!text) return;
+  const showCopied = () => {
+    if (!aiCopyBtn) return;
+    aiCopyBtn.textContent = "Copied ✓";
+    setTimeout(() => {
+      aiCopyBtn.textContent = "Copy prompt";
+    }, 1600);
+  };
+  const fallback = () => {
+    if (!aiPromptOutput) return;
+    aiPromptOutput.select();
+    try {
+      document.execCommand("copy");
+      showCopied();
+    } catch (_e) {}
+    if (window.getSelection) window.getSelection().removeAllRanges();
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(showCopied).catch(fallback);
+  } else {
+    fallback();
+  }
+}
+
 function openAdd() {
   editId = null;
   modalTitle.textContent = "Add Job";
@@ -628,6 +766,7 @@ function openAdd() {
   jobForm.contactEmail.value = "";
   jobForm.contactPhone.value = "";
   if (jobForm.contactWebsite) jobForm.contactWebsite.value = "";
+  if (jobForm.jobDescription) jobForm.jobDescription.value = "";
   jobForm.notes.value = "";
   jobForm.status.value = "Pending";
   openSheet();
@@ -642,6 +781,8 @@ function openEdit(job) {
   jobForm.contactPhone.value = job.contactPhone || "";
   if (jobForm.contactWebsite)
     jobForm.contactWebsite.value = job.contactWebsite || "";
+  if (jobForm.jobDescription)
+    jobForm.jobDescription.value = job.jobDescription || "";
   jobForm.notes.value = job.notes || "";
   jobForm.status.value = job.status || "Pending";
   openSheet();
@@ -660,6 +801,7 @@ jobForm.addEventListener("submit", (e) => {
     contactPhone: f.get("contactPhone"),
     contactWebsite: f.get("contactWebsite") || "",
     notes: f.get("notes"),
+    jobDescription: f.get("jobDescription") || "",
     status: f.get("status"),
     updatedAt: nowTs(),
   };
@@ -708,6 +850,7 @@ if (profileForm) {
         name: (data.get("name") || "").toString().trim() || "Your Name",
         phone: (data.get("phone") || "").toString().trim() || "Your Phone",
         email: (data.get("email") || "").toString().trim() || "your@email.com",
+        summary: (data.get("summary") || "").toString().trim(),
       };
       localStorage.setItem(PROFILE_LS_KEY, JSON.stringify(val));
       closeProfile();
@@ -741,6 +884,7 @@ document.getElementById("fileInput").addEventListener("change", (e) => {
         contactEmail: item.contactEmail || item.email || "",
         contactPhone: item.contactPhone || item.phone || "",
         notes: item.notes || "",
+        jobDescription: item.jobDescription || "",
         status: item.status || "Pending",
         createdAt: item.createdAt || nowTs(),
       }));
@@ -867,6 +1011,55 @@ if (!state.jobs || state.jobs.length === 0) {
       closeProfile();
     } else {
       profileForm.style.transform = "translateY(0)";
+    }
+  }
+  handle.addEventListener("mousedown", onStart);
+  handle.addEventListener("touchstart", onStart, { passive: true });
+  window.addEventListener("mousemove", onMove, { passive: false });
+  window.addEventListener("touchmove", onMove, { passive: false });
+  window.addEventListener("mouseup", onEnd);
+  window.addEventListener("touchend", onEnd);
+})();
+
+// AI prompt sheet listeners + drag handle
+if (aiCancelBtn) {
+  aiCancelBtn.addEventListener("click", closeAiPrompt);
+}
+if (aiCloseBtn) {
+  aiCloseBtn.addEventListener("click", closeAiPrompt);
+}
+if (aiPromptForm) {
+  aiPromptForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    copyAiPrompt();
+  });
+}
+(function () {
+  const handle = document.getElementById("aiSheetHandle");
+  if (!handle || !aiPromptForm || !aiPromptModal) return;
+  let dragging = false;
+  let startY = 0;
+  let currentY = 0;
+  function onStart(e) {
+    dragging = true;
+    startY = e.touches ? e.touches[0].clientY : e.clientY;
+    currentY = 0;
+    aiPromptForm.style.transitionProperty = "transform";
+  }
+  function onMove(e) {
+    if (!dragging) return;
+    const y = e.touches ? e.touches[0].clientY : e.clientY;
+    currentY = Math.max(0, y - startY);
+    aiPromptForm.style.transform = `translateY(${currentY}px)`;
+  }
+  function onEnd() {
+    if (!dragging) return;
+    dragging = false;
+    const threshold = 120;
+    if (currentY > threshold) {
+      closeAiPrompt();
+    } else {
+      aiPromptForm.style.transform = "translateY(0)";
     }
   }
   handle.addEventListener("mousedown", onStart);

@@ -1,5 +1,5 @@
 // Basic service worker for offline caching (Tailwind PWA)
-const CACHE = 'job-tracker-tailwind-v5';
+const CACHE = 'job-tracker-tailwind-v6';
 const FILES = [
   '.',
   'index.html',
